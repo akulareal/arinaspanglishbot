@@ -20,13 +20,12 @@ from telegram.ext import (
 )
 
 # ==============================
-# ВСТАВИТЬ СЮДА: токен от @BotFather
-# Пример: "7123456789:AAHf3k2LlksmX9-abcDEFghijklMNOpqrs"
-BOT_TOKEN = "СЮДА_ВСТАВИТЬ_ТОКЕН"
 
-# ВСТАВИТЬ СЮДА: chat_id Арины, куда бот будет присылать заявки.
-# Как узнать свой chat_id: написать боту @userinfobot, он пришлёт число в ответ.
-ARINA_CHAT_ID = 0000000000
+
+BOT_TOKEN = os.environ["BOT_TOKEN"]
+
+ARINA_CHAT_ID = int(os.environ["ARINA_CHAT_ID"])
+
 # ==============================
 
 # Доступные слоты времени — Арина может менять эти строки вручную
