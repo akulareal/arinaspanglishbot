@@ -129,7 +129,7 @@ def main():
 
     app.add_handler(conv_handler)
     print("Бот запущен...")
-       Thread(target=run_web).start()
+    Thread(target=run_web).start()
 
     app.run_polling()
 
