@@ -22,6 +22,7 @@ from telegram.ext import (
 # ==============================
 
 
+import os
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 
 ARINA_CHAT_ID = int(os.environ["ARINA_CHAT_ID"])
