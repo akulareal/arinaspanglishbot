@@ -1,3 +1,6 @@
+from flask import Flask
+from threading import Thread
+
 """
 Бот для записи на пробный урок с выбором языка (English / Español).
 После записи бот присылает заявку прямо Арине в личку в Telegram.
@@ -102,6 +105,15 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
+web_app = Flask(__name__)
+
+@web_app.route('/')
+def home():
+    return "Бот жив!"
+
+def run_web():
+    web_app.run(host='0.0.0.0', port=10000)
+
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
@@ -117,6 +129,8 @@ def main():
 
     app.add_handler(conv_handler)
     print("Бот запущен...")
+       Thread(target=run_web).start()
+
     app.run_polling()
 
 
