@@ -64,7 +64,7 @@ async def choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Напиши свое имя и возраст",
+        text="Напиши свое имя и возраст. Арина свяжется с тобой, чтобы договориться о пробном уроке✍🏻 ",
     )
 
     return ENTERING_NAME_AGE
@@ -94,7 +94,7 @@ async def enter_name_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
         disable_web_page_preview=True,
     )
 
-    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется ✍🏻")
+    await update.message.reply_text("Спасибо! Заявка отправлена. Ожидай сообщение от Арины 📩")
 
     return ConversationHandler.END
 
