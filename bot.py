@@ -94,7 +94,7 @@ async def enter_name_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
         disable_web_page_preview=True,
     )
 
-    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется 🙌")
+    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется ✍🏻")
 
     return ConversationHandler.END
 
