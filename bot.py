@@ -47,7 +47,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("🇪🇸 Español", callback_data="lang_es")],
     ]
     await update.message.reply_text(
-        "Привет! На каком языке хочешь пройти пробный урок? / Choose your language:",
+        "Привет! На каком языке хочешь пройти пробный урок?",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
     return CHOOSING_LANG
@@ -62,11 +62,10 @@ async def choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(WELCOME_MESSAGES[lang])
 
-    ask_contact = {
-        "English": "Leave your name and phone number (or Telegram username) and I’ll reach out to set up your trial lesson 🙌",
-        "Español": "Déjame tu nombre y número de teléfono (o tu usuario de Telegram) y me pondré en contacto para agendar tu clase de prueba 🙌",
-    }
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=ask_contact[lang])
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Оставь, пожалуйста, своё имя и телефон (или юзернейм в Telegram) — Арина свяжется с тобой, чтобы договориться о пробном уроке 🙌",
+    )
 
     return ENTERING_CONTACT
 
@@ -85,11 +84,7 @@ async def enter_contact(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await context.bot.send_message(chat_id=ARINA_CHAT_ID, text=notification)
 
-    thanks = {
-        "English": "Thank you! Your request has been sent, Arina will contact you soon 🙌",
-        "Español": "¡Gracias! Tu solicitud fue enviada, Arina se pondrá en contacto pronto 🙌",
-    }
-    await update.message.reply_text(thanks.get(lang, "Спасибо! Заявка отправлена 🙌"))
+    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется 🙌")
 
     return ConversationHandler.END
 
@@ -132,3 +127,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
