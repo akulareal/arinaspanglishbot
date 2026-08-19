@@ -84,7 +84,7 @@ async def enter_contact(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await context.bot.send_message(chat_id=ARINA_CHAT_ID, text=notification)
 
-    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется 🙌")
+    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется ✍🏻")
 
     return ConversationHandler.END
 
