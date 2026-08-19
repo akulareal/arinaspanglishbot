@@ -3,8 +3,8 @@ from threading import Thread
 
 """
 Бот для записи на пробный урок с выбором языка (English / Español).
-После выбора языка бот отправляет приветственное сообщение на этом языке,
-затем просит контакт и присылает заявку прямо Арине в личку в Telegram.
+После выбора языка бот отправляет приветственное сообщение на этом языке
+и сразу пересылает заявку Арине в личку в Telegram (со ссылкой на профиль пользователя).
 
 Как запустить:
 1. Установить библиотеку: pip install python-telegram-bot --upgrade
@@ -34,11 +34,11 @@ ARINA_CHAT_ID = int(os.environ["ARINA_CHAT_ID"])
 # Арина может менять текст здесь вручную.
 WELCOME_MESSAGES = {
     "English": "Hey! I’m so happy to see ya 🙌🏼",
-    "Español": "Hola! Encantada!🫶",
+    "Español": "Hola! Encantada🫶🏼",
 }
 
 # Состояния диалога
-CHOOSING_LANG, ENTERING_CONTACT = range(2)
+CHOOSING_LANG = 0
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -58,33 +58,27 @@ async def choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     lang = "English" if query.data == "lang_en" else "Español"
-    context.user_data["language"] = lang
+    user = update.effective_user
 
     await query.edit_message_text(WELCOME_MESSAGES[lang])
 
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Оставь, пожалуйста, своё имя и телефон (или юзернейм в Telegram) — Арина свяжется с тобой, чтобы договориться о пробном уроке 🙌",
-    )
+    # Отправляем заявку Арине сразу, со ссылкой на профиль пользователя
+    if user.username:
+        contact_line = f"https://t.me/{user.username}"
+    else:
+        contact_line = f'<a href="tg://user?id={user.id}">Открыть чат с пользователем</a>'
 
-    return ENTERING_CONTACT
-
-
-async def enter_contact(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    contact_info = update.message.text
-    lang = context.user_data.get("language")
-    user = update.effective_user
-
-    # Отправляем заявку Арине
     notification = (
         f"📩 Новая заявка на пробный урок!\n\n"
         f"Язык: {lang}\n"
-        f"Контакт: {contact_info}\n"
-        f"Telegram: @{user.username or 'нет юзернейма'}"
+        f"Контакт: {contact_line}"
     )
-    await context.bot.send_message(chat_id=ARINA_CHAT_ID, text=notification)
-
-    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется ✍🏻")
+    await context.bot.send_message(
+        chat_id=ARINA_CHAT_ID,
+        text=notification,
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+    )
 
     return ConversationHandler.END
 
@@ -113,7 +107,6 @@ def main():
         entry_points=[CommandHandler("start", start)],
         states={
             CHOOSING_LANG: [CallbackQueryHandler(choose_language, pattern="^lang_")],
-            ENTERING_CONTACT: [MessageHandler(filters.TEXT & ~filters.COMMAND, enter_contact)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
@@ -127,4 +120,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
