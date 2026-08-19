@@ -38,7 +38,7 @@ WELCOME_MESSAGES = {
 }
 
 # Состояния диалога
-CHOOSING_LANG = 0
+CHOOSING_LANG, ENTERING_NAME_AGE = range(2)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -58,11 +58,24 @@ async def choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     lang = "English" if query.data == "lang_en" else "Español"
-    user = update.effective_user
+    context.user_data["language"] = lang
 
     await query.edit_message_text(WELCOME_MESSAGES[lang])
 
-    # Отправляем заявку Арине сразу, со ссылкой на профиль пользователя
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Напиши свое имя и возраст",
+    )
+
+    return ENTERING_NAME_AGE
+
+
+async def enter_name_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    name_age = update.message.text
+    lang = context.user_data.get("language")
+    user = update.effective_user
+
+    # Отправляем заявку Арине
     if user.username:
         contact_line = f"https://t.me/{user.username}"
     else:
@@ -71,6 +84,7 @@ async def choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     notification = (
         f"📩 Новая заявка на пробный урок!\n\n"
         f"Язык: {lang}\n"
+        f"Имя и возраст: {name_age}\n"
         f"Контакт: {contact_line}"
     )
     await context.bot.send_message(
@@ -79,6 +93,8 @@ async def choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML",
         disable_web_page_preview=True,
     )
+
+    await update.message.reply_text("Спасибо! Заявка отправлена, Арина скоро с тобой свяжется 🙌")
 
     return ConversationHandler.END
 
@@ -107,6 +123,7 @@ def main():
         entry_points=[CommandHandler("start", start)],
         states={
             CHOOSING_LANG: [CallbackQueryHandler(choose_language, pattern="^lang_")],
+            ENTERING_NAME_AGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, enter_name_age)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
@@ -120,3 +137,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
